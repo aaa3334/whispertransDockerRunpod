@@ -1,0 +1,28 @@
+{
+  "title": "CrisperWhisper Worker",
+  "description": "High-quality speech transcription using CrisperWhisper on RunPod",
+  "type": "serverless",
+  "category": "audio",
+  "iconUrl": "https://blog.madiator.com/pictures/favicon.png",
+  "tags": [
+    "speech-to-text",
+    "transcription",
+    "whisper",
+    "audio",
+    "crisperwhisper"
+  ],
+  "config": {
+    "runsOn": "GPU",
+    "containerDiskInGb": 30,
+    "presets": [
+      {
+        "name": "Basic Transcription",
+        "description": "Automatic speech transcription"
+      },
+      {
+        "name": "Transcription with Language Setting",
+        "description": "Transcription with specified language"
+      }
+    ]
+  }
+}
