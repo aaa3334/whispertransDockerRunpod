@@ -5,8 +5,6 @@ from runpod.serverless.utils.rp_validator import validate
 from runpod.serverless.utils import download_files_from_urls, rp_cleanup
 from rp_schema import INPUT_VALIDATIONS
 from crisper_predictor import CrisperPredictor, Output
-import requests
-import base64
 
 MODEL = CrisperPredictor()
 MODEL.setup()
@@ -21,59 +19,6 @@ def cleanup_job_files(job_id, jobs_directory='/jobs'):
             print(f"Error removing job directory {job_path}: {str(e)}")
     else:
         print(f"Job directory not found: {job_path}")
-
-def call_whisperx_endpoint(audio_data=None, audio_url=None, api_key=None, endpoint_id="c5kzn73101i38e"):
-    """
-    Call WhisperX endpoint with either audio data or URL
-    
-    Args:
-        audio_data: Binary audio data or path to local audio file
-        audio_url: URL to audio file (alternative to audio_data)
-        api_key: RunPod API key
-        endpoint_id: RunPod endpoint ID
-    """
-    if not api_key:
-        raise ValueError("API key is required")
-    
-    if not audio_data and not audio_url:
-        raise ValueError("Either audio_data or audio_url must be provided")
-
-    headers = {
-        'Content-Type': 'application/json',
-        'Authorization': f'Bearer {api_key}'
-    }
-
-    # Prepare the input payload
-    if audio_data:
-        # If audio_data is a file path, read it
-        if isinstance(audio_data, str):
-            with open(audio_data, 'rb') as f:
-                audio_data = f.read()
-        
-        # Convert to base64
-        audio_base64 = base64.b64encode(audio_data).decode('utf-8')
-        
-        payload = {
-            "input": {
-                "audio_base64": audio_base64
-            }
-        }
-    else:
-        payload = {
-            "input": {
-                "audio_file": audio_url
-            }
-        }
-
-    api_url = f'https://api.runpod.ai/v2/{endpoint_id}/run'
-    
-    try:
-        response = requests.post(api_url, headers=headers, json=payload, timeout=30)
-        response.raise_for_status()
-        return response.json()
-    except requests.exceptions.RequestException as e:
-        print(f"Error making request: {e}")
-        return None
 
 def run(job):
     job_input = job['input']
