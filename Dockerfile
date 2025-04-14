@@ -40,7 +40,7 @@ RUN echo "Setting HF_HOME environment variable..."
 COPY src .
 RUN echo "Copying source code..."
 
-RUN chmod +x /start.sh && chmod +x /src/rp_handler.py
+RUN chmod +x /src/rp_handler.py
 RUN echo "Setting permissions..."
 
 RUN echo "Listing root directory:" && ls -la /
