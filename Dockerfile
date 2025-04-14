@@ -12,39 +12,26 @@ RUN apt-get update && \
 
 # Create cache directory for model
 RUN mkdir -p /cache
-RUN echo "Creating cache directory..." 
 
 # Copy requirements file first to leverage Docker cache
 COPY builder/requirements.txt /builder/requirements.txt
-RUN echo "Copying requirements file..." 
 
 # Install Python dependencies
 RUN python3 -m pip install --upgrade pip hf_transfer && \
     python3 -m pip install -r /builder/requirements.txt
-RUN echo "Installing Python dependencies..."
 
 # Copy the download script
 COPY builder/download_models.sh /builder/download_models.sh
 RUN chmod +x /builder/download_models.sh
-RUN echo "Copying download script..."
 
 # Set environment variables
 ENV HF_HOME=/cache 
-RUN echo "Setting HF_HOME environment variable..."
-
-# NOTE: Model will be downloaded at runtime when the container starts
-# This allows access to the RUNPOD_SECRET_HF_TOKEN environment variable
-# that RunPod injects at runtime
-
-# Copy source code
-COPY src .
-RUN echo "Copying source code..."
-
-RUN chmod +x /src/rp_handler.py
-RUN echo "Setting permissions..."
 
 RUN echo "Listing root directory:" && ls -la /
 RUN echo "Listing src directory:" && ls -la /src
+
+# Copy source code
+COPY src .
 
 # Create a startup script that downloads the model then runs the handler
 RUN echo '#!/bin/bash\n\
@@ -55,13 +42,11 @@ RUN echo '#!/bin/bash\n\
     # If model download was successful, start the handler\n\
     if [ $? -eq 0 ]; then\n\
     echo "Model downloaded successfully, starting handler..."\n\
-    exec python3 -u ./src/rp_handler.py\n\
+    exec python3 -u /rp_handler.py\n\
     else\n\
     echo "Model download failed, exiting..."\n\
     exit 1\n\
     fi' > /start.sh \
     && chmod +x /start.sh
-
-RUN echo "Creating startup script..."   
 
 CMD [ "/start.sh" ]
