@@ -2,8 +2,8 @@
 # Commit to git
 
 git add .
-git commit -m "Update with info from them"
-git push
+git commit -m "Revert dockerfile back"
+git push origin
 
 # Check git status
 
