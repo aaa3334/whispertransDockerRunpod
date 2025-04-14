@@ -61,6 +61,7 @@ RUN echo '#!/bin/bash\n\
     exit 1\n\
     fi' > /start.sh \
     && chmod +x /start.sh
+
 RUN echo "Creating startup script..."   
 
 CMD [ "/start.sh" ]
