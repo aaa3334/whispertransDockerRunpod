@@ -30,8 +30,11 @@ ENV HF_HOME=/cache
 # RUN echo "Listing root directory:" && ls -la /
 # RUN echo "Listing src directory:" && ls -la /src
 
-# Copy source code
-COPY src .
+# Copy source code into /app
+COPY src /app
+
+# List contents of /app to verify copy
+RUN echo "Listing /app contents:" && ls -la /app
 
 # Create a startup script that downloads the model then runs the handler
 RUN echo '#!/bin/bash\n\
@@ -42,11 +45,34 @@ RUN echo '#!/bin/bash\n\
     # If model download was successful, start the handler\n\
     if [ $? -eq 0 ]; then\n\
     echo "Model downloaded successfully, starting handler..."\n\
-    exec python3 -u /rp_handler.py\n\
+    exec python3 -u /app/rp_handler.py\n\
     else\n\
     echo "Model download failed, exiting..."\n\
     exit 1\n\
-    fi' > /start.sh \
-    && chmod +x /start.sh
+    fi' > /start.sh && chmod +x /start.sh
 
+# Start the application
 CMD [ "/start.sh" ]
+
+# Changing to update
+
+# Copy source code
+# COPY src .
+
+# # Create a startup script that downloads the model then runs the handler
+# RUN echo '#!/bin/bash\n\
+#     echo "Starting CrisperWhisper worker..."\n\
+#     # Download model using the HF token from RunPod secrets\n\
+#     /builder/download_models.sh\n\
+#     \n\
+#     # If model download was successful, start the handler\n\
+#     if [ $? -eq 0 ]; then\n\
+#     echo "Model downloaded successfully, starting handler..."\n\
+#     exec python3 -u /rp_handler.py\n\
+#     else\n\
+#     echo "Model download failed, exiting..."\n\
+#     exit 1\n\
+#     fi' > /start.sh \
+#     && chmod +x /start.sh
+
+# CMD [ "/start.sh" ]
